@@ -1,6 +1,6 @@
 use crypto_wallet_gen::{
-    Bip39Mnemonic, Bip44DerivationPath, BitcoinWallet, CoinType, EthereumWallet, Mnemonic,
-    MnemonicFactory, MoneroWallet, Wallet,
+    Bip39Mnemonic, Bip44DerivationPath, BitcoinWallet, CoinType, EthereumWallet, GroestlcoinWallet,
+    Mnemonic, MnemonicFactory, MoneroWallet, Wallet,
 };
 
 #[test]

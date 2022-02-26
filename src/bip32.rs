@@ -1,7 +1,7 @@
 use anyhow::Result;
-use bitcoin::network::constants::Network;
-use bitcoin::util::bip32::ExtendedPrivKey;
 use clap::arg_enum;
+use groestlcoin::network::constants::Network;
+use groestlcoin::util::bip32::ExtendedPrivKey;
 use secp256k1::Secp256k1;
 use std::convert::TryFrom;
 use std::convert::TryInto;
@@ -14,8 +14,9 @@ arg_enum! {
     pub enum CoinType {
         // List: https://github.com/libbitcoin/libbitcoin-system/wiki/Altcoin-Version-Mappings#10-monero-xmr-bip-3944-technology-examples
         BTC,
-        XMR,
         ETH,
+        GRS,
+        XMR,
     }
 }
 
@@ -24,6 +25,7 @@ impl CoinType {
         match self {
             Self::BTC => 0,
             Self::ETH => 60,
+            Self::GRS => 17,
             Self::XMR => 128,
         }
     }
@@ -37,11 +39,11 @@ pub struct Bip44DerivationPath {
     pub address_index: Option<u32>,
 }
 
-impl TryFrom<Bip44DerivationPath> for bitcoin::util::bip32::DerivationPath {
+impl TryFrom<Bip44DerivationPath> for groestlcoin::util::bip32::DerivationPath {
     type Error = anyhow::Error;
 
-    fn try_from(path: Bip44DerivationPath) -> Result<bitcoin::util::bip32::DerivationPath> {
-        use bitcoin::util::bip32::ChildNumber;
+    fn try_from(path: Bip44DerivationPath) -> Result<groestlcoin::util::bip32::DerivationPath> {
+        use groestlcoin::util::bip32::ChildNumber;
         let mut path_vec = vec![
             ChildNumber::from_hardened_idx(44).expect("44 is a valid index"),
             ChildNumber::from_hardened_idx(path.coin_type.bip44_value())?,
@@ -93,13 +95,13 @@ pub struct HDPrivKey {
 impl HDPrivKey {
     pub fn new(master_seed: Seed) -> Result<Self> {
         Ok(Self {
-            ext_key: ExtendedPrivKey::new_master(Network::Bitcoin, master_seed.to_bytes())?,
+            ext_key: ExtendedPrivKey::new_master(Network::Groestlcoin, master_seed.to_bytes())?,
         })
     }
 
     pub fn derive(&self, path: Bip44DerivationPath) -> Result<HDPrivKey> {
         let secp256k1 = Secp256k1::new();
-        let path: bitcoin::util::bip32::DerivationPath = path.try_into()?;
+        let path: groestlcoin::util::bip32::DerivationPath = path.try_into()?;
         Ok(HDPrivKey {
             ext_key: self.ext_key.derive_priv(&secp256k1, &path)?,
         })

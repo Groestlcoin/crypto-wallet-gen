@@ -3,6 +3,7 @@ use anyhow::Result;
 
 pub mod bitcoin;
 pub mod ethereum;
+pub mod groestlcoin;
 pub mod monero;
 
 pub trait Wallet: Sized {
